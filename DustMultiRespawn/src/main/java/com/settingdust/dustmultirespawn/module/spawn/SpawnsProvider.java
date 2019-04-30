@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -25,17 +26,20 @@ public class SpawnsProvider extends ConfigProvider<SpawnsEntity> {
     private ConfigurationNode locale = plugin.getLocale();
     private boolean isSyncWarp;
     private NucleusWarpService warpService;
+    private boolean perSpawnPerms;
     private Map<String, Location> spawns;
+    private MainProvider mainProvider;
 
     public SpawnsProvider(ProviderManager providerManager) {
         super(new SpawnsConfig(), new SpawnsEntity());
 
         spawns = entity.getLocations();
-        MainProvider mainProvider = providerManager.getMainProvider();
+        this.mainProvider = providerManager.getMainProvider();
         this.isSyncWarp = mainProvider.isSyncWarp();
         if (isSyncWarp) {
             warpService = NucleusAPI.getWarpService().get();
         }
+        this.perSpawnPerms = mainProvider.getPerms().isPerSpawnPerms();
 
         new SpawnsCommand(this);
 
@@ -59,13 +63,13 @@ public class SpawnsProvider extends ConfigProvider<SpawnsEntity> {
         }
     }
 
-    public Location<World> getSpawnLocation(Location location) {
+    public Location<World> getSpawnLocation(Location location, Player player) {
         Location<World> spawnLocation = ((World) location.getExtent()).getSpawnLocation();
         double distance = -1D;
         for (String key : spawns.keySet()) {
             Location<World> current = spawns.get(key);
             double tmpDistance = current.getPosition().distance(location.getPosition());
-            if (distance == -1 || tmpDistance < distance) {
+            if ((!perSpawnPerms || player.hasPermission("dust.spawn.spawns." + key)) && (distance == -1 || tmpDistance < distance)) {
                 distance = tmpDistance;
                 spawnLocation = current;
             }

@@ -70,7 +70,7 @@ public class SpawnsCommand {
         public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
             if (src instanceof Player) {
                 Player player = (Player) src;
-                player.setLocationSafely(spawnsProvider.getSpawnLocation(player.getLocation()));
+                player.setLocationSafely(spawnsProvider.getSpawnLocation(player.getLocation(), player));
             } else {
                 src.sendMessage(Text.builder()
                         .color(TextColors.RED)

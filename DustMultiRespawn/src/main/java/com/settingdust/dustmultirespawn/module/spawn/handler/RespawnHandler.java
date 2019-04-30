@@ -14,6 +14,6 @@ public class RespawnHandler {
 
     @Listener
     public void onRespawn(RespawnPlayerEvent event) {
-        event.setToTransform(new Transform<>(spawnsProvider.getSpawnLocation(event.getFromTransform().getLocation())));
+        event.setToTransform(new Transform<>(spawnsProvider.getSpawnLocation(event.getFromTransform().getLocation(), event.getOriginalPlayer())));
     }
 }
