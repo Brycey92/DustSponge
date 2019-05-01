@@ -14,7 +14,7 @@ warp.category=复活点
 
 operation.add.enterName=请在这里输入复活点名称
 operation.add.success=添加成功
-operation.add.waystone.emptyName=请输入名字！
+operation.add.waystone.emptyName="请输入名字！"
 
 operation.list.empty=列表为空
 

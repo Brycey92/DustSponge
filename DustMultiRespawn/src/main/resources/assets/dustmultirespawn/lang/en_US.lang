@@ -14,8 +14,8 @@ warp.category=Spawns
 
 operation.add.enterName=Please enter the spawn name here
 operation.add.success=Add success
-operation.add.waystone.emptyName=Empty name!
+operation.add.waystone.emptyName="Empty name!"
 
-operation.list.empty=Empty list!
+operation.list.empty="Empty list!"
 
 operation.remove.success=Spawn %name% has been removed
