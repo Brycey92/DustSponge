@@ -7,8 +7,8 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @Data
 @ConfigSerializable
 public class SignEntity {
-    @Setting(comment = "Whether sync spawn when 'signBlock' be placed/broken")
+    @Setting(comment = "Whether to sync spawn when the block below is placed/broken")
     private boolean enable = false;
-    @Setting(comment = "The Block to sync when place/break")
+    @Setting(comment = "The block to sync when placed/broken")
     private String type = "minecraft:torch";
 }

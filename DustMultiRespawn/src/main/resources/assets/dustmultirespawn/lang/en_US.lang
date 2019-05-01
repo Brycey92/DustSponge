@@ -1,21 +1,21 @@
 # Command
-command.notExist=Spawn isn't exist
-command.onlyPlayer=This command must be excuted by a player
+command.notExist="This spawn doesn't exist."
+command.onlyPlayer="This command must be excuted by a player."
 
-command.spawn.desc=The commands about spawn
+command.spawn.desc=The commands about spawns
 
-command.add.desc=Add spawn
+command.add.desc=Add a spawn
 
-command.remove.desc=Remove spawn
+command.remove.desc=Remove a spawn
 
 command.list.desc=List spawns
 
 warp.category=Spawns
 
-operation.add.enterName=Please enter the spawn name here
-operation.add.success=Add success
-operation.add.waystone.emptyName="Empty name!"
+operation.add.enterName="Please enter the spawn name here."
+operation.add.success="The spawn has been added."
+operation.add.waystone.emptyName="The waystone has an empty name."
 
-operation.list.empty="Empty list!"
+operation.list.empty="There are no spawns to list."
 
-operation.remove.success=Spawn %name% has been removed
+operation.remove.success="Spawn %name% has been removed."

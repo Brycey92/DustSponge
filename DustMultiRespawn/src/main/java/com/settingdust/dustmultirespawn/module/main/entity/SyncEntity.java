@@ -7,10 +7,10 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @Data
 @ConfigSerializable
 public class SyncEntity {
-    @Setting(comment = "Whether sync add/remove operation with Nucleus warp")
+    @Setting(comment = "Whether to sync spawn add/remove operations with Nucleus warps")
     private boolean warp = true;
     @Setting(comment = "Sign")
     private SignEntity sign = new SignEntity();
-    @Setting(comment = "Sync with waystone(https://minecraft.curseforge.com/projects/waystones)")
+    @Setting(comment = "Whether to sync with waystones (https://minecraft.curseforge.com/projects/waystones)")
     private boolean waystone = true;
 }

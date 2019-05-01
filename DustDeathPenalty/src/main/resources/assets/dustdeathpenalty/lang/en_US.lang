@@ -1,2 +1,2 @@
-message.drop="&aYou drop &b%exp% &aexp, &b%item_count% &aitems"
+message.drop="&aYou drop &b%exp% &aexp and &b%item_count% &aitems."
 
