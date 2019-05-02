@@ -1,9 +1,11 @@
 package com.settingdust.dustmultirespawn.module.spawn.handler;
 
+import com.settingdust.dustmultirespawn.module.spawn.SpawnNode;
 import com.settingdust.dustmultirespawn.module.spawn.SpawnsProvider;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
+import org.spongepowered.api.world.World;
 
 public class RespawnHandler {
     private SpawnsProvider spawnsProvider;
@@ -14,6 +16,7 @@ public class RespawnHandler {
 
     @Listener
     public void onRespawn(RespawnPlayerEvent event) {
-        event.setToTransform(new Transform<>(spawnsProvider.getSpawnLocation(event.getFromTransform().getLocation())));
+        SpawnNode spawnNode = spawnsProvider.getSpawnLocation(event.getFromTransform().getLocation(), event.getOriginalPlayer());
+        event.setToTransform(new Transform<>((World) spawnNode.location.getExtent(), spawnNode.location.getPosition(), spawnNode.rotation));
     }
 }

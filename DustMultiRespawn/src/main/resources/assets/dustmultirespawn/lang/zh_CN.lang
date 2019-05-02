@@ -16,6 +16,10 @@ operation.add.enterName=请在这里输入复活点名称
 operation.add.success=添加成功
 operation.add.waystone.emptyName="请输入名字！"
 
+operation.list.click=点击进入%name%
 operation.list.empty=列表为空
+operation.list.location=地点
 
 operation.remove.success=复活点%name%被移除
+
+operation.spawn.success=复活成功

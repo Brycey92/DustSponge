@@ -45,7 +45,7 @@ public class SpawnWaystoneHandler extends AbstractSpawnSignHandler {
                     if (matcher.find()) {
                         String wayStoneName = matcher.group(1);
                         if (!wayStoneName.equalsIgnoreCase("")) {
-                            spawnsProvider.add(wayStoneName, blockSnapshot.getLocation().get());
+                            spawnsProvider.add(wayStoneName, blockSnapshot.getLocation().get(), null);
                             waitingForName.remove(uuid);
                             player.sendMessage(Text.builder()
                                     .color(TextColors.GREEN)

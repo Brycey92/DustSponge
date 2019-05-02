@@ -13,9 +13,13 @@ command.list.desc=List spawns
 warp.category=Spawns
 
 operation.add.enterName="Please enter the spawn name here."
-operation.add.success="The spawn has been added."
+operation.add.success="Spawn %name% has been added."
 operation.add.waystone.emptyName="The waystone has an empty name."
 
+operation.list.click="Click to spawn at %name%."
 operation.list.empty="There are no spawns to list."
+operation.list.location=Location
 
 operation.remove.success="Spawn %name% has been removed."
+
+operation.spawn.success="You have warped to the nearest spawn point."

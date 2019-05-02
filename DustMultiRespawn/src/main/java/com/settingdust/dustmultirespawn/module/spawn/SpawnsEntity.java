@@ -12,5 +12,5 @@ import java.util.Map;
 @Data
 public class SpawnsEntity {
     @Setting
-    private Map<String, Location> locations = Maps.newHashMap();
+    private Map<String, SpawnNode> locations = Maps.newHashMap();
 }

@@ -1,6 +1,7 @@
 package com.settingdust.dustmultirespawn.module.spawn.handler;
 
 import com.settingdust.dustmultirespawn.DustMultiRespawn;
+import com.settingdust.dustmultirespawn.module.spawn.SpawnNode;
 import com.settingdust.dustmultirespawn.module.spawn.SpawnsProvider;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
@@ -64,9 +65,9 @@ public abstract class AbstractSpawnSignHandler {
     }
 
     protected void breakHandler(BlockSnapshot blockSnapshot, Player player) {
-        Map<String, Location> locations = spawnsProvider.getLocations();
+        Map<String, SpawnNode> locations = spawnsProvider.getLocations();
         for (String key : locations.keySet()) {
-            Location location = locations.get(key);
+            Location location = locations.get(key).location;
             if (location.getPosition().distance(blockSnapshot.getLocation().get().getPosition()) < 1) {
                 locations.remove(key);
                 if (player.hasPermission("dust.spawn.remove")) {

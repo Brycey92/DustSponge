@@ -32,7 +32,6 @@ public class LocaleManager {
 
         for (PluginContainer plugin : Sponge.getPluginManager().getPlugins()) {
             if (PluginUtils.isDepend(plugin, DustCore.ID)) {
-                locales.put(plugin.getId(), new DLocale(locale, plugin));
                 DustCore.getInstance().getLogger().info(
                         PlaceholderUtils.forPluginInfo(coreLocale
                                 .getRoot()
@@ -40,6 +39,7 @@ public class LocaleManager {
                                 .getNode("currentPlugin")
                                 .getString(), plugin)
                 );
+                locales.put(plugin.getId(), new DLocale(locale, plugin));
             }
         }
 

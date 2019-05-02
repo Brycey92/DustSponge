@@ -1,5 +1,7 @@
 package com.settingdust.dustmultirespawn.module.spawn;
 
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 import com.google.common.reflect.TypeToken;
 import com.settingdust.dustcore.api.ConfigProvider;
 import com.settingdust.dustmultirespawn.DustMultiRespawn;
@@ -13,9 +15,11 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
@@ -25,7 +29,7 @@ public class SpawnsProvider extends ConfigProvider<SpawnsEntity> {
     private ConfigurationNode locale = plugin.getLocale();
     private boolean isSyncWarp;
     private NucleusWarpService warpService;
-    private Map<String, Location> spawns;
+    private Map<String, SpawnNode> spawns;
 
     public SpawnsProvider(ProviderManager providerManager) {
         super(new SpawnsConfig(), new SpawnsEntity());
@@ -59,27 +63,25 @@ public class SpawnsProvider extends ConfigProvider<SpawnsEntity> {
         }
     }
 
-    public Location<World> getSpawnLocation(Location location) {
+    public SpawnNode getSpawnLocation(Location location, Player player) {
         Location<World> spawnLocation = ((World) location.getExtent()).getSpawnLocation();
+        Vector3d spawnRotation = null;
         double distance = -1D;
         for (String key : spawns.keySet()) {
-            Location<World> current = spawns.get(key);
+            Location<World> current = spawns.get(key).location;
             double tmpDistance = current.getPosition().distance(location.getPosition());
             if (distance == -1 || tmpDistance < distance) {
                 distance = tmpDistance;
                 spawnLocation = current;
+                spawnRotation = spawns.get(key).rotation;
             }
         }
-        return spawnLocation;
+
+        return new SpawnNode(spawnLocation, spawnRotation == null ? player.getRotation() : spawnRotation);
     }
 
-    public void add(String name, Location<World> location) {
-        spawns.put(name, new Location<>(
-                location.getExtent(),
-                location.getX(),
-                location.getY(),
-                location.getZ()
-        ));
+    public void add(String name, Location<World> location, @Nullable Vector3d rotation) {
+        spawns.put(name, new SpawnNode(location, rotation));
         if (isSyncWarp) {
             warpService.setWarp(name, location, location.getPosition());
             warpService.setWarpCategory(name, locale
@@ -100,7 +102,7 @@ public class SpawnsProvider extends ConfigProvider<SpawnsEntity> {
         }
     }
 
-    public Map<String, Location> getLocations() {
+    public Map<String, SpawnNode> getLocations() {
         return entity.getLocations();
     }
 }

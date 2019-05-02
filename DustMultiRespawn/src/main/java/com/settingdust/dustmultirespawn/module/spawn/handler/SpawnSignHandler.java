@@ -34,7 +34,7 @@ public class SpawnSignHandler extends AbstractSpawnSignHandler {
             Player player = (Player) event.getSource();
             UUID uuid = player.getUniqueId();
             if (waitingForName.containsKey(uuid)) {
-                spawnsProvider.add(event.getRawMessage().toPlain(), waitingForName.get(uuid));
+                spawnsProvider.add(event.getRawMessage().toPlain(), waitingForName.get(uuid), null);
                 player.sendMessage(Text.builder()
                         .color(TextColors.GREEN)
                         .append(Text.of(locale

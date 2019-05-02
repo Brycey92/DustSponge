@@ -12,7 +12,9 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -29,14 +31,16 @@ public class SpawnsCommand {
                 .description(Text.of(locale
                         .getNode("command")
                         .getNode("spawn")
-                        .getNode("desc").getString()))
+                        .getNode("desc")
+                        .getString()))
                 .executor(new Main())
                 .child(CommandSpec.builder()
                                 .permission("dust.spawn.add")
                                 .description(Text.of(locale
                                         .getNode("command")
                                         .getNode("add")
-                                        .getNode("desc").getString()))
+                                        .getNode("desc")
+                                        .getString()))
                                 .arguments(GenericArguments.string(Text.of("name")))
                                 .executor(new Add())
                                 .build()
@@ -46,7 +50,8 @@ public class SpawnsCommand {
                                 .description(Text.of(locale
                                         .getNode("command")
                                         .getNode("remove")
-                                        .getNode("desc").getString()))
+                                        .getNode("desc")
+                                        .getString()))
                                 .arguments(GenericArguments.string(Text.of("name")))
                                 .executor(new Remove())
                                 .build()
@@ -56,7 +61,8 @@ public class SpawnsCommand {
                                 .description(Text.of(locale
                                         .getNode("command")
                                         .getNode("list")
-                                        .getNode("desc").getString()))
+                                        .getNode("desc")
+                                        .getString()))
                                 .executor(new List())
                                 .build()
                         , "list", "l", "all")
@@ -70,7 +76,16 @@ public class SpawnsCommand {
         public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
             if (src instanceof Player) {
                 Player player = (Player) src;
-                player.setLocationSafely(spawnsProvider.getSpawnLocation(player.getLocation()));
+                SpawnNode spawnNode = spawnsProvider.getSpawnLocation(player.getLocation(), player);
+                player.setLocationSafely(spawnNode.location);
+                player.setRotation(spawnNode.rotation);
+                src.sendMessage(Text.builder()
+                        .color(TextColors.GREEN)
+                        .append(Text.of(locale
+                            .getNode("operation")
+                            .getNode("spawn")
+                            .getNode("success").getString())).build()
+                );
             } else {
                 src.sendMessage(Text.builder()
                         .color(TextColors.RED)
@@ -89,20 +104,24 @@ public class SpawnsCommand {
             if (src instanceof Player) {
                 Player player = (Player) src;
                 String name = String.valueOf(args.getOne("name").get());
-                spawnsProvider.add(name, player.getLocation());
+                spawnsProvider.add(name, player.getLocation(), player.getRotation());
                 src.sendMessage(Text.builder()
                         .color(TextColors.GREEN)
                         .append(Text.of(locale
                                 .getNode("operation")
                                 .getNode("add")
-                                .getNode("success").getString())).build()
+                                .getNode("success")
+                                .getString().replaceAll("%name%", name)
+                        )).build()
                 );
             } else {
                 src.sendMessage(Text.builder()
                         .color(TextColors.RED)
                         .append(Text.of(locale
                                 .getNode("command")
-                                .getNode("onlyPlayer").getString())).build()
+                                .getNode("onlyPlayer")
+                                .getString()
+                        )).build()
                 );
             }
             return CommandResult.success();
@@ -119,14 +138,18 @@ public class SpawnsCommand {
                         .append(Text.of(locale
                                 .getNode("operation")
                                 .getNode("remove")
-                                .getNode("success").getString())).build()
+                                .getNode("success")
+                                .getString().replaceAll("%name%", name)
+                        )).build()
                 );
             } else {
                 src.sendMessage(Text.builder()
                         .color(TextColors.RED)
                         .append(Text.of(locale
                                 .getNode("command")
-                                .getNode("notExist").getString())).build()
+                                .getNode("notExist")
+                                .getString()
+                        )).build()
                 );
             }
             return CommandResult.success();
@@ -136,31 +159,53 @@ public class SpawnsCommand {
     class List implements CommandExecutor {
         @Override
         public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-            Map<String, Location> spawns = spawnsProvider.getLocations();
+            Map<String, SpawnNode> spawns = spawnsProvider.getLocations();
             if (spawns.size() == 0) {
-                src.sendMessage(
-                        Text.builder().color(TextColors.RED)
-                                .append(Text.of(
-                                        locale.getNode("operation")
-                                                .getNode("list")
-                                                .getNode("empty").getString()
-                                )).build()
+                src.sendMessage(Text.builder()
+                        .color(TextColors.RED)
+                        .append(Text.of(locale
+                                .getNode("operation")
+                                .getNode("list")
+                                .getNode("empty")
+                                .getString()
+                        )).build()
                 );
             } else {
+                src.sendMessage(Text.builder()
+                        .color(TextColors.RED)
+                        .append(Text.of(locale
+                                .getNode("operation")
+                                .getNode("list")
+                                .getNode("empty")
+                                .getString()
+                        )).build()
+                );
                 for (String key : spawns.keySet()) {
-                    Location location = spawns.get(key);
-                    src.sendMessage(
-                            Text.joinWith(Text.of(" "),
-                                    Text.builder()
-                                            .color(TextColors.AQUA)
-                                            .append(Text.of(key))
-                                            .append(Text.of(":")).build(),
-                                    Text.of(TextColors.AQUA),
-                                    Text.of(location.getX()),
-                                    Text.of(location.getY()),
-                                    Text.of(location.getZ()),
-                                    Text.of(((World) location.getExtent()).getName())
-                            )
+                    Location location = spawns.get(key).location;
+                    src.sendMessage(Text.builder()
+                        .append(Text.builder(key)
+                                .style(TextStyles.ITALIC)
+                                .color(TextColors.GREEN)
+                                .onHover(TextActions.showText(Text.of(locale
+                                        .getNode("operation")
+                                        .getNode("list")
+                                        .getNode("click")
+                                        .getString().replaceAll("%name%", key)
+                                )))
+                                .onClick(TextActions.runCommand("/spawn " + key))
+                                .build())
+                        .color(TextColors.YELLOW)
+                        .append(Text.of(" - "))
+                        .append(Text.of(locale
+                                .getNode("operation")
+                                .getNode("list")
+                                .getNode("location")
+                                .getString()))
+                        .append(Text.of(": "))
+                        .append(Text.of(((World) location.getExtent()).getName()))
+                        .append(Text.of(", "))
+                        .append(Text.of(location.getBlockPosition().toString()))
+                        .build()
                     );
                 }
             }
