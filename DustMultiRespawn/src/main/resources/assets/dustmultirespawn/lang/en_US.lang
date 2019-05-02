@@ -24,3 +24,5 @@ operation.list.location=Location
 operation.remove.success="Spawn %name% has been removed."
 
 operation.spawn.success="You have warped to the nearest spawn point."
+
+operation.tp.success="You have spawned to %name%."

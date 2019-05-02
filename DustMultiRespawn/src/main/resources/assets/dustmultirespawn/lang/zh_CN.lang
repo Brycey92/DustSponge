@@ -24,3 +24,5 @@ operation.list.location=地点
 operation.remove.success=复活点%name%被移除
 
 operation.spawn.success=复活成功
+
+operation.tp.success=在%name%成功复活

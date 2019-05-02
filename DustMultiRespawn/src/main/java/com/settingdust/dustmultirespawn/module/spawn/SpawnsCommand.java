@@ -33,10 +33,6 @@ public class SpawnsCommand {
                         .getNode("spawn")
                         .getNode("desc")
                         .getString()))
-                .arguments(GenericArguments.requiringPermission(
-                        GenericArguments.optional(
-                                GenericArguments.string(Text.of("name"))),
-                        "dust.spawn.choose"))
                 .executor(new Main())
                 .child(CommandSpec.builder()
                                 .permission("dust.spawn.add")
@@ -70,6 +66,17 @@ public class SpawnsCommand {
                                 .executor(new List())
                                 .build()
                         , "list", "l", "all")
+                .child(CommandSpec.builder()
+                                .permission("dust.spawn.choose")
+                                .description(Text.of(locale
+                                        .getNode("command")
+                                        .getNode("tp")
+                                        .getNode("desc")
+                                        .getString()))
+                                .arguments(GenericArguments.string(Text.of("name")))
+                                .executor(new Tp())
+                                .build()
+                        , "to", "at", "warp", "teleport")
                 .build(), "spawn", "dustspawn", "ds");
 
         this.spawnsProvider = spawnsProvider;
@@ -80,40 +87,7 @@ public class SpawnsCommand {
         public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
             if (src instanceof Player) {
                 Player player = (Player) src;
-                SpawnNode spawnNode;
-                if (args.getOne("name").isPresent()) {
-                    String name = String.valueOf(args.getOne("name").get());
-                    if (spawnsProvider.getLocations().containsKey(name)) {
-                        if(spawnsProvider.canPlayerUseSpawn(player, name)) {
-                            spawnNode = spawnsProvider.getLocations().get(name);
-                        } else {
-                            src.sendMessage(Text.builder()
-                                    .color(TextColors.RED)
-                                    .append(Text.of(locale
-                                            .getNode("command")
-                                            .getNode("noPermission")
-                                            .getString().replaceAll("%name%", name)
-                                    )).build()
-                            );
-                            return CommandResult.success();
-                        }
-                    } else {
-                        src.sendMessage(Text.builder()
-                                .color(TextColors.RED)
-                                .append(Text.of(locale
-                                        .getNode("command")
-                                        .getNode("notExist")
-                                        .getString()
-                                )).build()
-                        );
-                        return CommandResult.success();
-                    }
-                } else {
-                    spawnNode = spawnsProvider.getSpawnLocation(player.getLocation(), player);
-                }
-
-                player.setLocationSafely(spawnNode.location);
-                player.setRotation(spawnNode.rotation);
+                spawnsProvider.teleportPlayer(player, spawnsProvider.getSpawnLocation(player.getLocation(), player));
                 src.sendMessage(Text.builder()
                         .color(TextColors.GREEN)
                         .append(Text.of(locale
@@ -247,6 +221,59 @@ public class SpawnsCommand {
                         .build()
                     );
                 }
+            }
+            return CommandResult.success();
+        }
+    }
+
+    class Tp implements CommandExecutor {
+        @Override
+        public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+            if (src instanceof Player) {
+                Player player = (Player) src;
+                String name = String.valueOf(args.getOne("name").get());
+                if (spawnsProvider.getLocations().containsKey(name)) {
+                    if(spawnsProvider.canPlayerUseSpawn(player, name)) {
+                        spawnsProvider.teleportPlayer(player, spawnsProvider.getLocations().get(name));
+                        src.sendMessage(Text.builder()
+                                .color(TextColors.GREEN)
+                                .append(Text.of(locale
+                                        .getNode("operation")
+                                        .getNode("tp")
+                                        .getNode("success")
+                                        .getString().replaceAll("%name%", name)
+                                )).build());
+                    } else {
+                        src.sendMessage(Text.builder()
+                                .color(TextColors.RED)
+                                .append(Text.of(locale
+                                        .getNode("command")
+                                        .getNode("noPermission")
+                                        .getString().replaceAll("%name%", name)
+                                )).build()
+                        );
+                        return CommandResult.success();
+                    }
+                } else {
+                    src.sendMessage(Text.builder()
+                            .color(TextColors.RED)
+                            .append(Text.of(locale
+                                    .getNode("command")
+                                    .getNode("notExist")
+                                    .getString()
+                            )).build()
+                    );
+                    return CommandResult.success();
+                }
+            } else {
+                src.sendMessage(Text.builder()
+                        .color(TextColors.RED)
+                        .append(Text.of(locale
+                                .getNode("command")
+                                .getNode("onlyPlayer")
+                                .getString()
+                        )).build()
+                );
             }
             return CommandResult.success();
         }

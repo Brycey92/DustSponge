@@ -111,6 +111,11 @@ public class SpawnsProvider extends ConfigProvider<SpawnsEntity> {
         return !instance.perSpawnPerms || player.hasPermission("dust.spawn.spawns." + name);
     }
 
+    public void teleportPlayer(Player player, SpawnNode spawnNode) {
+        player.setLocationSafely(spawnNode.location);
+        player.setRotation(spawnNode.rotation);
+    }
+
     public Map<String, SpawnNode> getLocations() {
         return entity.getLocations();
     }
