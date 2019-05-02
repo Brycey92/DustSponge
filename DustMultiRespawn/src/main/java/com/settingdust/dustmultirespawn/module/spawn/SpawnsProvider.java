@@ -29,17 +29,20 @@ public class SpawnsProvider extends ConfigProvider<SpawnsEntity> {
     private ConfigurationNode locale = plugin.getLocale();
     private boolean isSyncWarp;
     private NucleusWarpService warpService;
+    private boolean perSpawnPerms;
     private Map<String, SpawnNode> spawns;
+    private MainProvider mainProvider;
 
     public SpawnsProvider(ProviderManager providerManager) {
         super(new SpawnsConfig(), new SpawnsEntity());
 
         spawns = entity.getLocations();
-        MainProvider mainProvider = providerManager.getMainProvider();
+        this.mainProvider = providerManager.getMainProvider();
         this.isSyncWarp = mainProvider.isSyncWarp();
         if (isSyncWarp) {
             warpService = NucleusAPI.getWarpService().get();
         }
+        this.perSpawnPerms = mainProvider.getPerms().isPerSpawnPerms();
 
         new SpawnsCommand(this);
 
@@ -70,7 +73,7 @@ public class SpawnsProvider extends ConfigProvider<SpawnsEntity> {
         for (String key : spawns.keySet()) {
             Location<World> current = spawns.get(key).location;
             double tmpDistance = current.getPosition().distance(location.getPosition());
-            if (distance == -1 || tmpDistance < distance) {
+            if ((!perSpawnPerms || player.hasPermission("dust.spawn.spawns." + key)) && (distance == -1 || tmpDistance < distance)) {
                 distance = tmpDistance;
                 spawnLocation = current;
                 spawnRotation = spawns.get(key).rotation;

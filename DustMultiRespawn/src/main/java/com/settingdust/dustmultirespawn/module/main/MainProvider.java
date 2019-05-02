@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.settingdust.dustcore.api.ConfigProvider;
 import com.settingdust.dustmultirespawn.DustMultiRespawn;
 import com.settingdust.dustmultirespawn.module.main.entity.MainEntity;
+import com.settingdust.dustmultirespawn.module.main.entity.PermissionEntity;
 import com.settingdust.dustmultirespawn.module.main.entity.SyncEntity;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -41,4 +42,6 @@ public class MainProvider extends ConfigProvider<MainEntity> {
     public SyncEntity getSync() {
         return entity.getSync();
     }
+
+    public PermissionEntity getPerms() { return entity.getPerms(); }
 }

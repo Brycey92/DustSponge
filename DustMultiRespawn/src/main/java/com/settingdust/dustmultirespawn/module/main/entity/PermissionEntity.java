@@ -6,10 +6,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @Data
 @ConfigSerializable
-public class MainEntity {
-    @Setting(comment = "Sync")
-    private SyncEntity sync = new SyncEntity();
-
-    @Setting(comment = "Perms")
-    private PermissionEntity perms = new PermissionEntity();
+public class PermissionEntity {
+    @Setting(comment = "Whether to require the \"dust.spawn.spawns.name\" permission for each spawn location, where \"name\" is the name of the spawn")
+    private boolean perSpawnPerms = false;
 }
