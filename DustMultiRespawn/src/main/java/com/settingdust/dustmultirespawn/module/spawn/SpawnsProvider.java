@@ -31,13 +31,15 @@ public class SpawnsProvider extends ConfigProvider<SpawnsEntity> {
     private NucleusWarpService warpService;
     private boolean perSpawnPerms;
     private Map<String, SpawnNode> spawns;
-    private MainProvider mainProvider;
+    private static SpawnsProvider instance;
 
     public SpawnsProvider(ProviderManager providerManager) {
         super(new SpawnsConfig(), new SpawnsEntity());
 
+        instance = this;
+
         spawns = entity.getLocations();
-        this.mainProvider = providerManager.getMainProvider();
+        MainProvider mainProvider = providerManager.getMainProvider();
         this.isSyncWarp = mainProvider.isSyncWarp();
         if (isSyncWarp) {
             warpService = NucleusAPI.getWarpService().get();
@@ -73,7 +75,7 @@ public class SpawnsProvider extends ConfigProvider<SpawnsEntity> {
         for (String key : spawns.keySet()) {
             Location<World> current = spawns.get(key).location;
             double tmpDistance = current.getPosition().distance(location.getPosition());
-            if ((!perSpawnPerms || player.hasPermission("dust.spawn.spawns." + key)) && (distance == -1 || tmpDistance < distance)) {
+            if (canPlayerUseSpawn(player, key) && (distance == -1 || tmpDistance < distance)) {
                 distance = tmpDistance;
                 spawnLocation = current;
                 spawnRotation = spawns.get(key).rotation;
@@ -103,6 +105,10 @@ public class SpawnsProvider extends ConfigProvider<SpawnsEntity> {
         } else {
             return false;
         }
+    }
+
+    public static boolean canPlayerUseSpawn(Player player, String name) {
+        return !instance.perSpawnPerms || player.hasPermission("dust.spawn.spawns." + name);
     }
 
     public Map<String, SpawnNode> getLocations() {

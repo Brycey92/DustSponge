@@ -33,9 +33,10 @@ public class SpawnsCommand {
                         .getNode("spawn")
                         .getNode("desc")
                         .getString()))
-                .arguments(GenericArguments.optional(
-                        GenericArguments.string(Text.of("name")))
-                )
+                .arguments(GenericArguments.requiringPermission(
+                        GenericArguments.optional(
+                                GenericArguments.string(Text.of("name"))),
+                        "dust.spawn.choose"))
                 .executor(new Main())
                 .child(CommandSpec.builder()
                                 .permission("dust.spawn.add")
@@ -83,7 +84,19 @@ public class SpawnsCommand {
                 if (args.getOne("name").isPresent()) {
                     String name = String.valueOf(args.getOne("name").get());
                     if (spawnsProvider.getLocations().containsKey(name)) {
-                         spawnNode = spawnsProvider.getLocations().get(name);
+                        if(spawnsProvider.canPlayerUseSpawn(player, name)) {
+                            spawnNode = spawnsProvider.getLocations().get(name);
+                        } else {
+                            src.sendMessage(Text.builder()
+                                    .color(TextColors.RED)
+                                    .append(Text.of(locale
+                                            .getNode("command")
+                                            .getNode("noPermission")
+                                            .getString().replaceAll("%name%", name)
+                                    )).build()
+                            );
+                            return CommandResult.success();
+                        }
                     } else {
                         src.sendMessage(Text.builder()
                                 .color(TextColors.RED)

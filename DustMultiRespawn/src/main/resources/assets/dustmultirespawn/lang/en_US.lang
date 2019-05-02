@@ -1,4 +1,5 @@
 # Command
+command.noPermission="You don't have permission to spawn at %name%."
 command.notExist="This spawn doesn't exist."
 command.onlyPlayer="This command must be excuted by a player."
 
