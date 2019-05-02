@@ -33,6 +33,9 @@ public class SpawnsCommand {
                         .getNode("spawn")
                         .getNode("desc")
                         .getString()))
+                .arguments(GenericArguments.optional(
+                        GenericArguments.string(Text.of("name")))
+                )
                 .executor(new Main())
                 .child(CommandSpec.builder()
                                 .permission("dust.spawn.add")
@@ -76,7 +79,26 @@ public class SpawnsCommand {
         public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
             if (src instanceof Player) {
                 Player player = (Player) src;
-                SpawnNode spawnNode = spawnsProvider.getSpawnLocation(player.getLocation(), player);
+                SpawnNode spawnNode;
+                if (args.getOne("name").isPresent()) {
+                    String name = String.valueOf(args.getOne("name").get());
+                    if (spawnsProvider.getLocations().containsKey(name)) {
+                         spawnNode = spawnsProvider.getLocations().get(name);
+                    } else {
+                        src.sendMessage(Text.builder()
+                                .color(TextColors.RED)
+                                .append(Text.of(locale
+                                        .getNode("command")
+                                        .getNode("notExist")
+                                        .getString()
+                                )).build()
+                        );
+                        return CommandResult.success();
+                    }
+                } else {
+                    spawnNode = spawnsProvider.getSpawnLocation(player.getLocation(), player);
+                }
+
                 player.setLocationSafely(spawnNode.location);
                 player.setRotation(spawnNode.rotation);
                 src.sendMessage(Text.builder()
@@ -84,14 +106,18 @@ public class SpawnsCommand {
                         .append(Text.of(locale
                             .getNode("operation")
                             .getNode("spawn")
-                            .getNode("success").getString())).build()
+                            .getNode("success")
+                            .getString()
+                        )).build()
                 );
             } else {
                 src.sendMessage(Text.builder()
                         .color(TextColors.RED)
                         .append(Text.of(locale
                                 .getNode("command")
-                                .getNode("onlyPlayer").getString())).build()
+                                .getNode("onlyPlayer")
+                                .getString()
+                        )).build()
                 );
             }
             return CommandResult.success();
